@@ -217,6 +217,11 @@ function Mumu:ChangeWoWFonts()
     TargetFrameToT.Name:SetFont(PANNO, 11, "")
     FocusFrameToT.Name:SetFont(PANNO, 11, "")
 
+    for i = 1, MAX_BOSS_FRAMES do
+        local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetFont(PANNO, 11, "")
+    end 
+
     if width > 2048 then
         GameTooltipText:SetFont(NORMAL, 15, "")
         GameTooltipHeaderText:SetFont(NORMAL, 15, "")
@@ -228,7 +233,4 @@ function Mumu:ChangeWoWFonts()
     end
 
     PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HitIndicator.HitText:SetFont(KENRIS, 32, "THINOUTLINE")
-    -- future update 11.0
-    -- PetFrame.PetFrameContent.PetFrameContentMain.HitIndicator.HitText:SetFont(KENRIS, 32, "THINOUTLINE")
-
 end

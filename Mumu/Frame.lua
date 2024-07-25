@@ -3,12 +3,7 @@ local _G, pairs, ipairs = _G, pairs, ipairs
 local UnitIsPlayer, UnitIsConnected, UnitIsTapDenied, UnitClass, UnitIsDeadOrGhost, UnitReaction = UnitIsPlayer, UnitIsConnected, UnitIsTapDenied, UnitClass, UnitIsDeadOrGhost, UnitReaction
 local UnitPowerType = UnitPowerType
 local GetCVar = GetCVar
-
--- Remove Hit Indicator of Player Portrait.
-PetHitIndicator:SetText(nil)
-PetHitIndicator.SetText = function() end
-
--- LootFrame:SetScale(1.05)
+local LocalKoKR = true
 
 --  RGB             Decimal         Hex
 --  Hatred          204, 84, 56     #cc5438
@@ -67,96 +62,12 @@ local function GetPowerColors(unit)
                 r, g, b = altR, altG, altB
             end
         end
-        if powerType == 0 then --- hooksecurefunc mana text
+        if powerToken == "MANA" then --- hooksecurefunc mana text
             r, g, b = 0.0, 0.55, 1.0
         end
     end
     return r, g, b
 end
-
--- Hooking Colour
-local UpdateColor = CreateFrame("Frame")
-UpdateColor:RegisterEvent("ADDON_LOADED")
-UpdateColor:RegisterEvent("PLAYER_ENTERING_WORLD")
-UpdateColor:RegisterEvent("PLAYER_LOGIN")
-UpdateColor:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-UpdateColor:RegisterEvent("ACTIONBAR_UPDATE_STATE")
-UpdateColor:RegisterEvent("PVP_WORLDSTATE_UPDATE")
-UpdateColor:RegisterEvent("UNIT_ENTERED_VEHICLE")
-UpdateColor:RegisterEvent("UNIT_EXITED_VEHICLE")
-UpdateColor:RegisterEvent("PLAYER_TARGET_CHANGED")
-UpdateColor:RegisterEvent("PLAYER_FOCUS_CHANGED")
-UpdateColor:RegisterEvent("UNIT_FACTION") --- faction (Alliance, Horde, Enemy, Friendly)
-UpdateColor:RegisterEvent("UNIT_FLAGS") --- flags (revive, repair)
-UpdateColor:RegisterEvent("UNIT_HEALTH")
-UpdateColor:RegisterEvent("UNIT_LEVEL")
-UpdateColor:RegisterEvent("UNIT_TARGET")
-UpdateColor:SetScript("OnEvent",function(_, event)
-        if PlayerFrame.state == "vehicle" then
-            _G["PlayerName"]:SetTextColor(1.00, 0.82, 0.00)
-            PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
-            PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("vehicle"))
-        else
-            _G["PlayerName"]:SetTextColor(GetNameColors("player"))
-            PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
-            PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("player"))
-        end
-     
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("target"))
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("target"))
-
-        if not UnitIsPlayer("target") and not UnitIsConnected("target") or (UnitIsDeadOrGhost("target")) or UnitIsTapDenied("target") then
-            TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarDesaturated(true)
-            TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarColor(GetPowerColors("target"))
-        end
-        
-        
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("focus"))
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("focus"))
-        
-        if not UnitIsPlayer("focus") and not UnitIsConnected("focus") or (UnitIsDeadOrGhost("focus")) or UnitIsTapDenied("focus") then
-            FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarDesaturated(true)
-            FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarColor(GetPowerColors("focus"))
-        end
-        
-        TargetFrameToT.Name:SetTextColor(GetNameColors("targettarget"))
-        TargetFrameToT.HealthBar:SetStatusBarDesaturated(true)
-        TargetFrameToT.HealthBar:SetStatusBarColor(GetNameColors("targettarget"))
-
-        FocusFrameToT.Name:SetTextColor(GetNameColors("focustarget"))
-        FocusFrameToT.HealthBar:SetStatusBarDesaturated(true)
-        FocusFrameToT.HealthBar:SetStatusBarColor(GetNameColors("focustarget"))
-
-        for i = 1, MAX_BOSS_FRAMES do
-            local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("Boss" .. i))
-        end
-
-            PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("player"))
-            PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("player"))
-            PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.LeftText:SetTextColor(GetPowerColors("player"))
-            PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.RightText:SetTextColor(GetPowerColors("player"))
-            TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("target"))
-            TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("target"))
-            TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("target"))
-            TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("target"))    
-            FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("focus"))
-            FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("focus"))
-            FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("focus"))
-            FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("focus"))
-            PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("player"))
-            PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.ManaBarText:SetTextColor(GetPowerColors("player"))
-            TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("target"))
-            FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("focus"))
-            TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("target"))
-            FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("focus"))
-    end
-)
 
 local function UpdateTextStringWithValues(textString, value, valueMin, valueMax)
 	if( self.LeftText and self.RightText ) then
@@ -269,12 +180,21 @@ local function UpdateTextStringWithValues(textString, value, valueMin, valueMax)
 end
 
 -- Define English Unit(K,M) or Korean Unit(만,억,조).
-local function UpdateBarText(self, _, value, _, maxValue)
+local function UpdateBarTextFormat(self, _, value, _, maxValue)
     -- If you set your preferences to show percentages and numbers together
-    if self.RightText and value and maxValue > 0 and not self.showPercentage and GetCVar("statusTextDisplay") == "BOTH"
-     then
-        -- Display numbers together in preferences
-        -- Output characters in English units (K, M)
+    if self.RightText and value and maxValue > 0 and not self.showPercentage and GetCVar("statusTextDisplay") == "BOTH" then
+    if LocalKoKR then    -- Display numbers together in preferences
+        local v =
+            (value >= 1e9 and format("%.1f 억", value / 1e8)) or 
+            (value >= 1e8 and format("%.2f 억", value / 1e8)) or 
+            (value >= 1e6 and format("%.0f 만", value / 1e4)) or 
+            value
+        if value >= 1e6 then
+            self.RightText:SetText(v)
+        else
+            self.RightText:SetText(BreakUpLargeNumbers(value)) --- Separate numbers 10,000 and under with commas
+        end
+    else 
         local v =
             ((value >= 1e8 and format("%.0f M", value / 1e6)) or (value >= 1e5 and format("%.0f K", value / 1e3)) or value)
         if value >= 1e5 then
@@ -282,6 +202,7 @@ local function UpdateBarText(self, _, value, _, maxValue)
         else
             self.RightText:SetText(BreakUpLargeNumbers(value)) --- Separate numbers 10,000 and under with commas
         end
+    end
     elseif value and maxValue > 0 and GetCVar("statusTextDisplay") == "NUMERIC" then
     end
 end
@@ -329,7 +250,6 @@ local function UpdateBarTextColorFocus(color)
     FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("focus"))
 end
 
-
 local function UpdateBarTextColorPets()
     PetFrameHealthBarTextLeft:SetText("")
     PetFrameHealthBarTextRight:SetText("")
@@ -337,14 +257,110 @@ local function UpdateBarTextColorPets()
     PetFrameManaBarTextRight:SetText("")
 end
 
+local function UpdateBarTextColorBoss(color)
+    for i = 1, MAX_BOSS_FRAMES do
+        local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("Boss" .. i))
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("Boss" .. i))
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("Boss" .. i))
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("Boss" .. i))
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("Boss" .. i))
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("Boss" .. i))
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("Boss" .. i))
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
+    end
+end
+
+-- Hooking Bar Colour
+local UpdateColor = CreateFrame("Frame")
+UpdateColor:RegisterEvent("ADDON_LOADED")
+UpdateColor:RegisterEvent("PLAYER_ENTERING_WORLD")
+UpdateColor:RegisterEvent("PLAYER_LOGIN")
+UpdateColor:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+UpdateColor:RegisterEvent("ACTIONBAR_UPDATE_STATE")
+UpdateColor:RegisterEvent("PVP_WORLDSTATE_UPDATE")
+UpdateColor:RegisterEvent("UNIT_ENTERED_VEHICLE")
+UpdateColor:RegisterEvent("UNIT_EXITED_VEHICLE")
+UpdateColor:RegisterEvent("PLAYER_TARGET_CHANGED")
+UpdateColor:RegisterEvent("PLAYER_FOCUS_CHANGED")
+UpdateColor:RegisterEvent("UNIT_FACTION") --- faction (Alliance, Horde, Enemy, Friendly)
+UpdateColor:RegisterEvent("UNIT_FLAGS") --- flags (revive, repair)
+UpdateColor:RegisterEvent("UNIT_HEALTH")
+UpdateColor:RegisterEvent("UNIT_LEVEL")
+UpdateColor:RegisterEvent("UNIT_TARGET")
+UpdateColor:SetScript("OnEvent",function(_, event)
+    if PlayerFrame.state == "vehicle" then
+        _G["PlayerName"]:SetTextColor(1.00, 0.82, 0.00)
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("vehicle"))
+    else
+        _G["PlayerName"]:SetTextColor(GetNameColors("player"))
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("player"))
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("player"))
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("player"))
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.LeftText:SetTextColor(GetPowerColors("player"))
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.RightText:SetTextColor(GetPowerColors("player"))
+    end
+
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("target"))
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("target"))
+
+    if not UnitIsPlayer("target") and not UnitIsConnected("target") or (UnitIsDeadOrGhost("target")) or UnitIsTapDenied("target") then
+        TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarDesaturated(true)
+        TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarColor(GetPowerColors("target"))
+    end
+
+    FocusFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
+    FocusFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("focus"))
+    FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
+    FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("focus"))
+
+    if not UnitIsPlayer("focus") and not UnitIsConnected("focus") or (UnitIsDeadOrGhost("focus")) or UnitIsTapDenied("focus") then
+        FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarDesaturated(true)
+        FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarColor(GetPowerColors("focus"))
+    end
+
+    TargetFrameToT.Name:SetTextColor(GetNameColors("targettarget"))
+    TargetFrameToT.HealthBar:SetStatusBarDesaturated(true)
+    TargetFrameToT.HealthBar:SetStatusBarColor(GetNameColors("targettarget"))
+
+    FocusFrameToT.Name:SetTextColor(GetNameColors("focustarget"))
+    FocusFrameToT.HealthBar:SetStatusBarDesaturated(true)
+    FocusFrameToT.HealthBar:SetStatusBarColor(GetNameColors("focustarget"))
+
+    for i = 1, MAX_BOSS_FRAMES do
+        local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
+        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("Boss" .. i))
+    end
+
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("target"))
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("target"))
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("target"))
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("target"))    
+    FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("focus"))
+    FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("focus"))
+    FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("focus"))
+    FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("focus"))
+    PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("player"))
+    PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.ManaBarText:SetTextColor(GetPowerColors("player"))
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("target"))
+    FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("focus"))
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("target"))
+    FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("focus"))
+end)
+
 -- hooking numbers
-hooksecurefunc(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarText)
-hooksecurefunc(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar, "UpdateTextStringWithValues", UpdateBarText)
-hooksecurefunc(TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarText)
-hooksecurefunc(TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar, "UpdateTextStringWithValues", UpdateBarText)
-hooksecurefunc(FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar, "UpdateTextStringWithValues", UpdateBarText)
-hooksecurefunc(FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarText)
-hooksecurefunc(AlternatePowerBar, "UpdateTextStringWithValues", UpdateBarText)
+hooksecurefunc(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
+hooksecurefunc(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
+hooksecurefunc(TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
+hooksecurefunc(TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
+hooksecurefunc(FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
+hooksecurefunc(FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
+hooksecurefunc(AlternatePowerBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
 
 -- hook text colour
 hooksecurefunc(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarTextColorPlayer)
@@ -359,19 +375,12 @@ hooksecurefunc(PetFrameHealthBar,"UpdateTextStringWithValues",UpdateBarTextColor
 hooksecurefunc(PetFrameManaBar,"UpdateTextStringWithValues",UpdateBarTextColorPets)
 
 -- hook boss frames
-local function UpdateBarTextColorBoss(color)
-    for i = 1, MAX_BOSS_FRAMES do
-        local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
-        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("Boss" .. i))
-        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("Boss" .. i))
-        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("Boss" .. i))
-        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("Boss" .. i))
-        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("Boss" .. i))
-        bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("Boss" .. i))
-    end 
-end
-
 for i = 1, MAX_BOSS_FRAMES do
     local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
     hooksecurefunc(bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarTextColorBoss)
+    hooksecurefunc(bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
 end
+
+-- Remove Hit Indicator of Player Portrait.
+PetHitIndicator:SetText(nil)
+PetHitIndicator.SetText = function() end

@@ -1,17 +1,17 @@
 local LSM = LibStub("LibSharedMedia-3.0")
 local koKR, western = LSM.LOCALE_BIT_koKR, LSM.LOCALE_BIT_western
 
-LSM:Register("Font", "Arial Narrow", [[Fonts\ARIALN.ttf]], koKR)
-LSM:Register("Font", "Panno", [[Fonts\Panno.ttf]])
-LSM:Register("Font", "Panno", [[Fonts\Panno.ttf]], koKR)
-LSM:Register("Font", "OldStyle", [[Fonts\K_Damage.ttf]])
-LSM:Register("Font", "OldStyle", [[Fonts\K_Damage.ttf]], koKR)
-LSM:Register("Font", "Kenris", [[Fonts\K_Pagetext.ttf]])
-LSM:Register("Font", "Kenris", [[Fonts\K_Pagetext.ttf]], koKR)
+LSM:Register("font", "Arial Narrow", [[Fonts\ARIALN.ttf]], koKR)
+LSM:Register("font", "Panno", [[Fonts\Panno.ttf]])
+LSM:Register("font", "Panno", [[Fonts\Panno.ttf]], koKR)
+LSM:Register("font", "OldStyle", [[Fonts\K_Damage.ttf]])
+LSM:Register("font", "OldStyle", [[Fonts\K_Damage.ttf]], koKR)
+LSM:Register("font", "Kenris", [[Fonts\K_Pagetext.ttf]])
+LSM:Register("font", "Kenris", [[Fonts\K_Pagetext.ttf]], koKR)
 
-LSM:Register("Statusbar", "Normtex", [[Interface\AddOns\Mumu\Media\Statusbar\Normtex.tga]])
-LSM:Register("Statusbar", "Normtex2", [[Interface\AddOns\Mumu\Media\Statusbar\Normtex2.tga]])
-LSM:Register("Statusbar", "Mumutex", [[Interface\AddOns\Mumu\Media\Statusbar\Mumutex.tga]])
+LSM:Register("statusbar", "Normtex", [[Interface\AddOns\Mumu\Media\Statusbar\Normtex.tga]])
+LSM:Register("statusbar", "Normtex2", [[Interface\AddOns\Mumu\Media\Statusbar\Normtex2.tga]])
+LSM:Register("statusbar", "Mumutex", [[Interface\AddOns\Mumu\Media\Statusbar\Mumutex.tga]])
 
 LSM:Register("border", "Devil", [[Interface\AddOns\Mumu\Media\Border\Devil.tga]])
 LSM:Register("border", "Devil2", [[Interface\AddOns\Mumu\Media\Border\Devil2.tga]])

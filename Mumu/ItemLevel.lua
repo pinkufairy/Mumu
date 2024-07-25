@@ -231,7 +231,7 @@ local scoreTiers = {
 	[150] = { ["score"] = 200, ["color"] = { 1.00, 1.00, 1.00 } },		-- |cffffffff200+|r
 }
 
-function GetTiersData()
+local function GetTiersData()
 	return tiers
 end
 
