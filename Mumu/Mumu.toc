@@ -1,4 +1,4 @@
-## Interface: 110000
+## Interface: 110002
 ## Version: 11.0.0.55000
 ## Author: Kim Su-hyeon (꿀하니@Windrunner-KR)
 ## Title: Mumu

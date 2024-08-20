@@ -28,7 +28,7 @@ Mumu:RegisterEvent("ADDON_LOADED")
 function Mumu:ADDON_LOADED(...)
     self:UnregisterEvent("ADDON_LOADED")
     self:SetScreenshotQuality()
-    self:SetCameraDistanceMaxZoomFactor()
+    self:SetCameraIndirectVisibility()
     self:SetUIErrorsFrame()
     self:SetDefaultSpacing()
     self:ChangeWoWFonts()
@@ -43,21 +43,19 @@ function Mumu:SetScreenshotQuality()
     end
 end
 
--- event: Camera Factor
-function Mumu:SetCameraDistanceMaxZoomFactor()
-    local value = GetCVar("cameraDistanceMaxZoomFactor")
-    if tonumber(value) <= 2.58 then
-        SetCVar("cameraDistanceMaxZoomFactor", 2.6) -- 2.6 Maximum
+function Mumu:SetCameraIndirectVisibility()
+    local value = GetCVar("cameraIndirectVisibility")
+    if value ~= 1 then
+        SetCVar("cameraIndirectVisibility", 1) -- 1: Turn on
+        SetCVar("cameraIndirectOffset", 10) -- 1-10: set 10 to cameraIndirectOffset.
     end
 end
+
 
 -- event: Adjust/Modify UI ErrorFrames
 function Mumu:SetUIErrorsFrame()
     UIErrorsFrame:ClearAllPoints()
     UIErrorsFrame:SetPoint("TOP", "UIParent", "TOP", 0, -60) -- Relocate UI ErrorFrames
-    if locale == "koKR" then
-        UIErrorsFrame:SetScale(1) -- Scale UI Fonts
-    end
     UIErrorsFrame.SetPoint = function()
     end
 end
@@ -85,7 +83,7 @@ local cycles = {
     {
         chatType = "INSTANCE_CHAT",
         use = function(self, editbox)
-            return select(2, IsInInstance()) == "pvp"
+            return select(2, IsInInstance()) == "party"
         end
     },
     {
@@ -163,47 +161,45 @@ end
 
 function Mumu:ChangeWoWFonts()
     local SetFont = self.SetFont
-    local NORMAL = "Fonts\\FRIZQT__.ttf"
+    local NORMAL = "Fonts\\2002.ttf"
     local NUMBER = "Fonts\\ARIALN.ttf"
     local KENRIS = "Fonts\\K_Pagetext.ttf"
     local PANNO = "Fonts\\Panno.ttf"
     local SERIF = "Fonts\\K_Damage.ttf"
     
+    -- Global font
     _G.UNIT_NAME_FONT = NORMAL
     _G.DAMAGE_TEXT_FONT = KENRIS
     _G.STANDARD_TEXT_FONT = NORMAL
 
-    --world zone text font, world map text font
+    -- World zone text font, world map text font
     SetFont(ZoneTextFont, KENRIS, 32, "OUTLINE")
     SetFont(SubZoneTextFont, KENRIS, 26, "OUTLINE")
     SetFont(PVPInfoTextFont, KENRIS, 22, "THINOUTLINE")
     SetFont(WorldMapTextFont, KENRIS, 32, "THINOUTLINE")
 
-    -- chat bubble font
-    -- SetFont(ChatBubbleFont, NORMAL, 15)
-
-    -- garrison, PlayerHitIndicator
-    SetFont(NumberFont_Outline_Large, NUMBER, 16, "OUTLINE")
-
-    -- Action Button Counts, StatsFrameText, Buff/Debuff...
+    -- Action button counts, Stack counts, Buff/Debuff counts, Player money...
     SetFont(NumberFont_Outline_Med, NUMBER, 14, "OUTLINE")
-
-    -- Action Button Cooldown text
+    
+    -- Action button cooldown text
     SetFont(SystemFont_Shadow_Large_Outline, SERIF, 18, "THINOUTLINE") 
 
-    -- Unit frame Buff/Debuff...
+    -- Unit frame Buff/Debuff counts...
     SetFont(NumberFontNormalSmall, NUMBER, 13, "OUTLINE")
 
-    -- Chat Font
+    -- Chat font/Chat input textarea
     SetFont(NumberFont_Shadow_Med, NUMBER, 14, "")
-    SetFont(NumberFont_Shadow_Small, NUMBER, 13, "")
 
-    -- Unit Frames Health/Mana, Action Bar
+    -- Community & Guild chat frame
+    CommunitiesFrame.Chat.MessageFrame:SetFont(NUMBER, 14, "")
+
+    -- Unit Frame Health/Mana, Action Bar
     SetFont(TextStatusBarText, PANNO, 11, "OUTLINE")
 
-    -- Unit Frames Level
-    SetFont(GameNormalNumberFont, KENRIS, 11, "")
+    -- Unit Frame Level
+    SetFont(GameNormalNumberFont, PANNO, 11, "")
 
+    -- Unit Frame Name/Text
     PlayerName:SetFont(PANNO, 11, "")
     PetName:SetFont(PANNO, 11, "")
     TargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetFont(PANNO, 11, "")
@@ -222,6 +218,7 @@ function Mumu:ChangeWoWFonts()
         bossTargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetFont(PANNO, 11, "")
     end 
 
+    -- Game Tooltip font
     if width > 2048 then
         GameTooltipText:SetFont(NORMAL, 15, "")
         GameTooltipHeaderText:SetFont(NORMAL, 15, "")
@@ -232,5 +229,10 @@ function Mumu:ChangeWoWFonts()
         GameTooltipTextSmall:SetFont(NORMAL, 14, "")
     end
 
+    -- Unit Frame HitIndicator Text
     PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HitIndicator.HitText:SetFont(KENRIS, 32, "THINOUTLINE")
+
+    -- Money Frame Font
+    SetFont(PriceFont, NUMBER, 14, "")
+   
 end

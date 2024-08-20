@@ -1,9 +1,10 @@
 -- Cache global variables --
 local _G, pairs, ipairs = _G, pairs, ipairs
 local UnitIsPlayer, UnitIsConnected, UnitIsTapDenied, UnitClass, UnitIsDeadOrGhost, UnitReaction = UnitIsPlayer, UnitIsConnected, UnitIsTapDenied, UnitClass, UnitIsDeadOrGhost, UnitReaction
+local UnitExists = UnitExists
 local UnitPowerType = UnitPowerType
 local GetCVar = GetCVar
-local LocalKoKR = false
+local LocalKoKR = true
 
 --  RGB             Decimal         Hex
 --  Hatred          204, 84, 56     #cc5438
@@ -215,20 +216,23 @@ end
 
 -- Hooking Bar Colour
 local UpdateColor = CreateFrame("Frame")
-UpdateColor:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-UpdateColor:RegisterEvent("UNIT_ENTERED_VEHICLE")
-UpdateColor:RegisterEvent("UNIT_EXITED_VEHICLE")
-UpdateColor:RegisterEvent("PLAYER_TARGET_CHANGED")
-UpdateColor:RegisterEvent("PLAYER_FOCUS_CHANGED")
+UpdateColor:RegisterEvent("ADDON_LOADED")
 UpdateColor:RegisterEvent("UNIT_FACTION") --- faction (Alliance, Horde, Enemy, Friendly)
 UpdateColor:RegisterEvent("UNIT_FLAGS") --- flags (revive, repair)
 UpdateColor:RegisterEvent("UNIT_HEALTH")
 UpdateColor:RegisterEvent("UNIT_TARGET")
+UpdateColor:RegisterEvent("UNIT_ENTERED_VEHICLE")
+UpdateColor:RegisterEvent("UNIT_EXITED_VEHICLE")
+UpdateColor:RegisterEvent("PLAYER_TARGET_CHANGED")
+UpdateColor:RegisterEvent("PLAYER_FOCUS_CHANGED")
 UpdateColor:SetScript("OnEvent",function(_, event)
     if PlayerFrame.state == "vehicle" then
         _G["PlayerName"]:SetTextColor(1.00, 0.82, 0.00)
         PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
         PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("vehicle"))
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("vehicle"))
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("vehicle"))
+        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("vehicle"))
         PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("vehicle"))
         PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.LeftText:SetTextColor(GetPowerColors("vehicle"))
         PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.RightText:SetTextColor(GetPowerColors("vehicle"))
@@ -259,13 +263,12 @@ UpdateColor:SetScript("OnEvent",function(_, event)
         TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("target"))
         TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("target"))
 
-
         if not UnitIsPlayer("target") and not UnitIsConnected("target") or (UnitIsDeadOrGhost("target")) or UnitIsTapDenied("target") then
             TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarDesaturated(true)
             TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarColor(GetPowerColors("target"))
         end
 
-        if UnitExists("targettarget") and UnitIsPlayer("targettarget") then
+        if UnitExists("targettarget") then
             TargetFrameToT.Name:SetTextColor(GetNameColors("targettarget"))
             TargetFrameToT.HealthBar:SetStatusBarDesaturated(true)
             TargetFrameToT.HealthBar:SetStatusBarColor(GetNameColors("targettarget"))

@@ -12,6 +12,8 @@ LSM:Register("font", "Kenris", [[Fonts\K_Pagetext.ttf]], koKR)
 LSM:Register("statusbar", "Normtex", [[Interface\AddOns\Mumu\Media\Statusbar\Normtex.tga]])
 LSM:Register("statusbar", "Normtex2", [[Interface\AddOns\Mumu\Media\Statusbar\Normtex2.tga]])
 LSM:Register("statusbar", "Mumutex", [[Interface\AddOns\Mumu\Media\Statusbar\Mumutex.tga]])
+LSM:Register("statusbar", "Gradient_Right", [[Interface\AddOns\Mumu\Media\Statusbar\gradient_right.tga]])
+
 
 LSM:Register("border", "Devil", [[Interface\AddOns\Mumu\Media\Border\Devil.tga]])
 LSM:Register("border", "Devil2", [[Interface\AddOns\Mumu\Media\Border\Devil2.tga]])
