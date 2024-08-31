@@ -9,16 +9,12 @@ LSM:Register("font", "OldStyle", [[Fonts\K_Damage.ttf]], koKR)
 LSM:Register("font", "Kenris", [[Fonts\K_Pagetext.ttf]])
 LSM:Register("font", "Kenris", [[Fonts\K_Pagetext.ttf]], koKR)
 
-LSM:Register("statusbar", "Normtex", [[Interface\AddOns\Mumu\Media\Statusbar\Normtex.tga]])
-LSM:Register("statusbar", "Normtex2", [[Interface\AddOns\Mumu\Media\Statusbar\Normtex2.tga]])
 LSM:Register("statusbar", "Mumutex", [[Interface\AddOns\Mumu\Media\Statusbar\Mumutex.tga]])
 LSM:Register("statusbar", "Gradient_Right", [[Interface\AddOns\Mumu\Media\Statusbar\gradient_right.tga]])
-
 
 LSM:Register("border", "Devil", [[Interface\AddOns\Mumu\Media\Border\Devil.tga]])
 LSM:Register("border", "Devil2", [[Interface\AddOns\Mumu\Media\Border\Devil2.tga]])
 LSM:Register("border", "Devil3", [[Interface\AddOns\Mumu\Media\Border\Devil3.tga]])
-LSM:Register("border", "Roth", [[Interface\AddOns\Mumu\Media\Border\Roth.tga]])
 
 LSM:Register("sound", "DingDong", [[Interface\AddOns\Mumu\Media\Sound\DingDong.ogg]])
 LSM:Register("sound", "Mumu_alarm", [[Interface\AddOns\Mumu\Media\Sound\Mumu_alarm.ogg]])
