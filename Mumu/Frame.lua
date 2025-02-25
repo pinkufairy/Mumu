@@ -1,73 +1,79 @@
 -- Cache global variables --
-local _G, pairs, ipairs = _G, pairs, ipairs
-local UnitIsPlayer, UnitIsConnected, UnitIsTapDenied, UnitClass, UnitIsDeadOrGhost, UnitReaction = UnitIsPlayer, UnitIsConnected, UnitIsTapDenied, UnitClass, UnitIsDeadOrGhost, UnitReaction
+local _G = _G
+local pairs = pairs
+local ipairs = ipairs
+local UnitIsPlayer = UnitIsPlayer
+local UnitIsConnected = UnitIsConnected
+local UnitIsTapDenied = UnitIsTapDenied
+local UnitClass = UnitClass
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitReaction = UnitReaction
 local UnitExists = UnitExists
 local UnitPowerType = UnitPowerType
 local GetCVar = GetCVar
 local LocalKoKR = true
 
---  RGB             Decimal         Hex
---  Hatred          204, 84, 56     #cc5438
---  Unfriend        191, 69, 0      #bf4500
---  Neutral         230, 179, 0     #e6b300
---  Friend          0, 153, 26      #00991a
+--  Hatred		#cc5438
+--  Unfriend	#bf4500
+--  Neutral	#e6b300
+--  Friend		#00991a
 
 -- Define Name Colour
 local function GetNameColors(unit)
-    local r, g, b
-    if not UnitIsPlayer(unit) and not UnitIsConnected(unit) or UnitIsDeadOrGhost(unit) or UnitIsTapDenied(unit) then
-        r, g, b = 0.5, 0.5, 0.5
-    elseif UnitIsPlayer(unit) then
-        local _, class = UnitClass(unit)
-        local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-        if classColor then
-            r, g, b = classColor.r, classColor.g, classColor.b
-        else
-            if UnitIsFriend("player", unit) then
-                r, g, b = 0.0, 1.0, 0.0
-            else
-                r, g, b = 1.0, 0.0, 0.0
-            end
-        end
-    else
-        local _, class = UnitClass(unit)
-        local factionColor = FACTION_BAR_COLORS[UnitReaction(unit, "player")] or CUSTOM_CLASS_COLORS
-        if factionColor then
-            r, g, b = factionColor.r, factionColor.g, factionColor.b or UnitSelectionColor(unit)
-        else
-            if UnitIsFriend("player", unit) then
-                r, g, b = 0.0, 1.0, 0.0
-            else
-                r, g, b = 1.0, 0.0, 0.0
-            end
-        end
-    end
-    return r, g, b
+	local r, g, b
+	if not UnitIsPlayer(unit) and not UnitIsConnected(unit) or UnitIsDeadOrGhost(unit) or UnitIsTapDenied(unit) then
+		r, g, b = 0.5, 0.5, 0.5
+	elseif UnitIsPlayer(unit) then
+		local _, class = UnitClass(unit)
+		local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+		if classColor then
+			r, g, b = classColor.r, classColor.g, classColor.b
+		else
+			if UnitIsFriend("player", unit) then
+				r, g, b = 0.0, 1.0, 0.0
+			else
+				r, g, b = 1.0, 0.0, 0.0
+			end
+		end
+	else
+		local _, class = UnitClass(unit)
+		local factionColor = FACTION_BAR_COLORS[UnitReaction(unit, "player")] or CUSTOM_CLASS_COLORS
+		if factionColor then
+			r, g, b = factionColor.r, factionColor.g, factionColor.b or UnitSelectionColor(unit)
+		else
+			if UnitIsFriend("player", unit) then
+				r, g, b = 0.0, 1.0, 0.0
+			else
+				r, g, b = 1.0, 0.0, 0.0
+			end
+		end
+	end
+	return r, g, b
 end
 
 -- Define Power Colour
 local function GetPowerColors(unit)
-    local r, g, b
-    if not UnitIsPlayer(unit) and not UnitIsConnected(unit) or (UnitIsDeadOrGhost(unit)) or UnitIsTapDenied(unit) then
-       r, g, b = 0.5, 0.5, 0.5
-    else
-        local powerType, powerToken, altR, altG, altB = UnitPowerType(unit)
-        local info = PowerBarColor[powerToken]
-        if info then
-            r, g, b = info.r, info.g, info.b
-        else
-            if not altR then
-                info = PowerBarColor[powerType] or PowerBarColor["MANA"]
-                r, g, b = info.r, info.g, info.b
-            else
-                r, g, b = altR, altG, altB
-            end
-        end
-        if powerToken == "MANA" then --- hooksecurefunc mana text
-            r, g, b = 0.0, 0.55, 1.0
-        end
-    end
-    return r, g, b
+	local r, g, b
+	if not UnitIsPlayer(unit) and not UnitIsConnected(unit) or (UnitIsDeadOrGhost(unit)) or UnitIsTapDenied(unit) then
+	   r, g, b = 0.5, 0.5, 0.5
+	else
+		local powerType, powerToken, altR, altG, altB = UnitPowerType(unit)
+		local info = PowerBarColor[powerToken]
+		if info then
+			r, g, b = info.r, info.g, info.b
+		else
+			if not altR then
+				info = PowerBarColor[powerType] or PowerBarColor["MANA"]
+				r, g, b = info.r, info.g, info.b
+			else
+				r, g, b = altR, altG, altB
+			end
+		end
+		if powerToken == "MANA" then --- hooksecurefunc mana text
+			r, g, b = 0.0, 0.55, 1.0
+		end
+	end
+	return r, g, b
 end
 
 local function UpdateTextStringWithValues(textString, value, valueMin, valueMax)
@@ -182,36 +188,37 @@ end
 
 -- Define English Unit(K,M) or Korean Unit(만,억,조).
 local function UpdateBarTextFormat(self, _, value, _, maxValue)
-    -- If you set your preferences to show percentages and numbers together
-    if self.RightText and value and maxValue > 0 and not self.showPercentage and GetCVar("statusTextDisplay") == "BOTH" then
-        if LocalKoKR then    -- Display numbers together in preferences
-            local v =
-                (value >= 1e9 and format("%.1f 억", value / 1e8)) or 
-                (value >= 1e8 and format("%.2f 억", value / 1e8)) or 
-                (value >= 1e6 and format("%.0f 만", value / 1e4)) or 
-                value
-            if value >= 1e6 then
-                self.RightText:SetText(v)
-            elseif value >= 1000 then
-                self.RightText:SetText(BreakUpLargeNumbers(value)) --- Separate numbers 10,000 and under with commas
-            end
-        else 
-            local v =
-                ((value >= 1e8 and format("%.0f M", value / 1e6)) or (value >= 1e5 and format("%.0f K", value / 1e3)) or value)
-            if value >= 1e5 then
-                self.RightText:SetText(v)
-            elseif value >= 1000 then
-                self.RightText:SetText(BreakUpLargeNumbers(value)) --- Separate numbers 10,000 and under with commas
-            end
-        end
-    end
+	-- If you set your preferences to show percentages and numbers together
+	if self.RightText and value and maxValue > 0 and not self.showPercentage and GetCVar("statusTextDisplay") == "BOTH" then
+		if LocalKoKR then    -- Display numbers together in preferences
+			local v =
+				(value >= 1e9 and format("%.1f 억", value / 1e8)) or 
+				(value >= 1e8 and format("%.2f 억", value / 1e8)) or 
+				(value >= 1e6 and format("%.0f 만", value / 1e4)) or 
+				(value >= 1e5 and format("%.1f 만", value / 1e4)) or 
+				value
+			if value >= 1e5 then
+				self.RightText:SetText(v)
+			elseif value >= 1000 then
+				self.RightText:SetText(BreakUpLargeNumbers(value)) --- Separate numbers 10,000 and under with commas
+			end
+		else 
+			local v =
+				((value >= 1e8 and format("%.0f M", value / 1e6)) or (value >= 1e5 and format("%.0f K", value / 1e3)) or value)
+			if value >= 1e5 then
+				self.RightText:SetText(v)
+			elseif value >= 1000 then
+				self.RightText:SetText(BreakUpLargeNumbers(value)) --- Separate numbers 10,000 and under with commas
+			end
+		end
+	end
 end
 
 local function UpdateBarTextColorPets()
-    PetFrameHealthBarTextLeft:SetText(nil)
-    PetFrameHealthBarTextRight:SetText(nil)
-    PetFrameManaBarTextLeft:SetText(nil)
-    PetFrameManaBarTextRight:SetText(nil)
+	PetFrameHealthBarTextLeft:SetText(nil)
+	PetFrameHealthBarTextRight:SetText(nil)
+	PetFrameManaBarTextLeft:SetText(nil)
+	PetFrameManaBarTextRight:SetText(nil)
 end
 
 -- Hooking Bar Colour
@@ -225,95 +232,98 @@ UpdateColor:RegisterEvent("UNIT_ENTERED_VEHICLE")
 UpdateColor:RegisterEvent("UNIT_EXITED_VEHICLE")
 UpdateColor:RegisterEvent("PLAYER_TARGET_CHANGED")
 UpdateColor:RegisterEvent("PLAYER_FOCUS_CHANGED")
+UpdateColor:RegisterEvent("PLAYER_TALENT_UPDATE")
+UpdateColor:RegisterEvent("PLAYER_ENTERING_WORLD")
+UpdateColor:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 UpdateColor:SetScript("OnEvent",function(_, event)
-    if PlayerFrame.state == "vehicle" then
-        _G["PlayerName"]:SetTextColor(1.00, 0.82, 0.00)
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("vehicle"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("vehicle"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("vehicle"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("vehicle"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("vehicle"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.LeftText:SetTextColor(GetPowerColors("vehicle"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.RightText:SetTextColor(GetPowerColors("vehicle"))
-    else
-        _G["PlayerName"]:SetTextColor(GetNameColors("player"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("player"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("player"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("player"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("player"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.LeftText:SetTextColor(GetPowerColors("player"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.RightText:SetTextColor(GetPowerColors("player"))
-        PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.ManaBarText:SetTextColor(GetPowerColors("player"))
-        AlternatePowerBar.LeftText:SetTextColor(0.00, 0.50, 1.00)
-        AlternatePowerBar.RightText:SetTextColor(0.00, 0.50, 1.00)
-        AlternatePowerBar.TextString:SetTextColor(0.00, 0.50, 1.00)
-    end
+	if PlayerFrame.state == "vehicle" then
+		_G["PlayerName"]:SetTextColor(1.00, 0.82, 0.00)
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("vehicle"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("vehicle"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("vehicle"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("vehicle"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("vehicle"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.LeftText:SetTextColor(GetPowerColors("vehicle"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.RightText:SetTextColor(GetPowerColors("vehicle"))
+	else
+		_G["PlayerName"]:SetTextColor(GetNameColors("player"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("player"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("player"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("player"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("player"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.LeftText:SetTextColor(GetPowerColors("player"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.RightText:SetTextColor(GetPowerColors("player"))
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.ManaBarText:SetTextColor(GetPowerColors("player"))
+		AlternatePowerBar.LeftText:SetTextColor(0.00, 0.50, 1.00)
+		AlternatePowerBar.RightText:SetTextColor(0.00, 0.50, 1.00)
+		AlternatePowerBar.TextString:SetTextColor(0.00, 0.50, 1.00)
+	end
 
-    if UnitExists("target") then
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("target"))
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("target"))
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("target"))
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("target"))
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("target"))
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("target"))
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("target"))
-        TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("target"))
+	if UnitExists("target") then
+		TargetFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
+		TargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("target"))
+		TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
+		TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("target"))
+		TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("target"))
+		TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("target"))
+		TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("target"))
+		TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("target"))
+		TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("target"))
+		TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("target"))
 
-        if not UnitIsPlayer("target") and not UnitIsConnected("target") or (UnitIsDeadOrGhost("target")) or UnitIsTapDenied("target") then
-            TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarDesaturated(true)
-            TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarColor(GetPowerColors("target"))
-        end
+		if not UnitIsPlayer("target") and not UnitIsConnected("target") or (UnitIsDeadOrGhost("target")) or UnitIsTapDenied("target") then
+			TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarDesaturated(true)
+			TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarColor(GetPowerColors("target"))
+		end
 
-        if UnitExists("targettarget") then
-            TargetFrameToT.Name:SetTextColor(GetNameColors("targettarget"))
-            TargetFrameToT.HealthBar:SetStatusBarDesaturated(true)
-            TargetFrameToT.HealthBar:SetStatusBarColor(GetNameColors("targettarget"))
-        end
-    end
+		if UnitExists("targettarget") then
+			TargetFrameToT.Name:SetTextColor(GetNameColors("targettarget"))
+			TargetFrameToT.HealthBar:SetStatusBarDesaturated(true)
+			TargetFrameToT.HealthBar:SetStatusBarColor(GetNameColors("targettarget"))
+		end
+	end
 
-    if UnitExists("Focus") then
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("focus"))
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("focus"))
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("focus"))
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("focus"))
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("focus"))
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("focus"))
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("focus"))
-        FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("focus"))
+	if UnitExists("Focus") then
+		FocusFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
+		FocusFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("focus"))
+		FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
+		FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("focus"))
+		FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("focus"))
+		FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("focus"))
+		FocusFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("focus"))
+		FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("focus"))
+		FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("focus"))
+		FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("focus"))
 
-        if not UnitIsPlayer("focus") and not UnitIsConnected("focus") or (UnitIsDeadOrGhost("focus")) or UnitIsTapDenied("focus") then
-            FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarDesaturated(true)
-            FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarColor(GetPowerColors("focus"))
-        end
+		if not UnitIsPlayer("focus") and not UnitIsConnected("focus") or (UnitIsDeadOrGhost("focus")) or UnitIsTapDenied("focus") then
+			FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarDesaturated(true)
+			FocusFrame.TargetFrameContent.TargetFrameContentMain.ManaBar:SetStatusBarColor(GetPowerColors("focus"))
+		end
 
-        if UnitExists("focustarget") then
-            FocusFrameToT.Name:SetTextColor(GetNameColors("focustarget"))
-            FocusFrameToT.HealthBar:SetStatusBarDesaturated(true)
-            FocusFrameToT.HealthBar:SetStatusBarColor(GetNameColors("focustarget"))
-        end
-    end
+		if UnitExists("focustarget") then
+			FocusFrameToT.Name:SetTextColor(GetNameColors("focustarget"))
+			FocusFrameToT.HealthBar:SetStatusBarDesaturated(true)
+			FocusFrameToT.HealthBar:SetStatusBarColor(GetNameColors("focustarget"))
+		end
+	end
    
-    for i = 1, MAX_BOSS_FRAMES do
-        local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
-        if UnitExists("Boss" .. i) then
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("Boss" .. i))
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("Boss" .. i))
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("Boss" .. i))
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("Boss" .. i))
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("Boss" .. i))
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("Boss" .. i))
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("Boss" .. i))
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("Boss" .. i))
-            bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
-        end
-    end
+	for i = 1, MAX_BOSS_FRAMES do
+		local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
+		if UnitExists("Boss" .. i) then
+			bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarDesaturated(true)
+			bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar:SetStatusBarColor(GetNameColors("Boss" .. i))
+			bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.LeftText:SetTextColor(GetNameColors("Boss" .. i))
+			bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.RightText:SetTextColor(GetNameColors("Boss" .. i))
+			bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBarText:SetTextColor(GetNameColors("Boss" .. i))
+			bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.LeftText:SetTextColor(GetPowerColors("Boss" .. i))
+			bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetTextColor(GetPowerColors("Boss" .. i))
+			bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar.ManaBarText:SetTextColor(GetPowerColors("Boss" .. i))
+			bossTargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetTextColor(GetNameColors("Boss" .. i))
+			bossTargetFrame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
+		end
+	end
 end)
 
 -- hooking
@@ -328,8 +338,8 @@ hooksecurefunc(PetFrameHealthBar,"UpdateTextStringWithValues",UpdateBarTextColor
 hooksecurefunc(PetFrameManaBar,"UpdateTextStringWithValues",UpdateBarTextColorPets)
 
 for i = 1, MAX_BOSS_FRAMES do
-    local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
-    hooksecurefunc(bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
+	local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
+	hooksecurefunc(bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
 end
 
 -- Remove Hit Indicator of Player Portrait.
