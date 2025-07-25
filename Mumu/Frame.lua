@@ -54,7 +54,7 @@ end
 -- Define Power Colour
 local function GetPowerColors(unit)
 	local r, g, b
-	if not UnitIsPlayer(unit) and not UnitIsConnected(unit) or (UnitIsDeadOrGhost(unit)) or UnitIsTapDenied(unit) then
+	if not UnitIsPlayer(unit) and not UnitIsConnected(unit) or UnitIsDeadOrGhost(unit) or UnitIsTapDenied(unit) then
 	   r, g, b = 0.5, 0.5, 0.5
 	else
 		local powerType, powerToken, altR, altG, altB = UnitPowerType(unit)
@@ -223,18 +223,17 @@ end
 
 -- Hooking Bar Colour
 local UpdateColor = CreateFrame("Frame")
-UpdateColor:RegisterEvent("ADDON_LOADED")
-UpdateColor:RegisterEvent("UNIT_FACTION") --- faction (Alliance, Horde, Enemy, Friendly)
-UpdateColor:RegisterEvent("UNIT_FLAGS") --- flags (revive, repair)
-UpdateColor:RegisterEvent("UNIT_HEALTH")
-UpdateColor:RegisterEvent("UNIT_TARGET")
+UpdateColor:RegisterEvent("ADDON_LOADED")			-- /reload
+UpdateColor:RegisterEvent("PLAYER_ENTERING_WORLD")	-- entering world / loading scene
+UpdateColor:RegisterEvent("UNIT_FACTION")			-- faction (Alliance, Horde, Enemy, Friendly)
+--UpdateColor:RegisterEvent("UNIT_FLAGS") 			-- flags (revive, repair)
+UpdateColor:RegisterEvent("UNIT_TARGET")			-- Target Unit (target/focus)
 UpdateColor:RegisterEvent("UNIT_ENTERED_VEHICLE")
 UpdateColor:RegisterEvent("UNIT_EXITED_VEHICLE")
-UpdateColor:RegisterEvent("PLAYER_TARGET_CHANGED")
-UpdateColor:RegisterEvent("PLAYER_FOCUS_CHANGED")
+UpdateColor:RegisterEvent("PLAYER_TARGET_CHANGED")	-- Target Unit (target)
+UpdateColor:RegisterEvent("PLAYER_FOCUS_CHANGED")	-- Target Unit (focus)
 UpdateColor:RegisterEvent("PLAYER_TALENT_UPDATE")
-UpdateColor:RegisterEvent("PLAYER_ENTERING_WORLD")
-UpdateColor:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+UpdateColor:RegisterEvent("UPDATE_SHAPESHIFT_FORM")	-- Druid
 UpdateColor:SetScript("OnEvent",function(_, event)
 	if PlayerFrame.state == "vehicle" then
 		_G["PlayerName"]:SetTextColor(1.00, 0.82, 0.00)
@@ -345,3 +344,17 @@ end
 -- Remove Hit Indicator of Player Portrait.
 PetHitIndicator:SetText(nil)
 PetHitIndicator.SetText = function() end
+
+-- Remove Tooltip <Right click for Frame Settings>
+hooksecurefunc("UnitFrame_UpdateTooltip",
+    function(self)
+        for i = GameTooltip:NumLines(), 3, -1 do
+            local line = _G["GameTooltipTextLeft" .. i]
+            local text = line and line:GetText()
+            if text and text == UNIT_POPUP_RIGHT_CLICK then
+                GameTooltip:SetUnit(self.unit, self.hideStatusOnTooltip)
+                break
+            end
+        end
+    end
+)

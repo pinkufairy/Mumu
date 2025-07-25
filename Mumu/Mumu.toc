@@ -1,9 +1,9 @@
-## Interface: 110007
+## Interface: 110107
 ## Version: 11.1
 ## Author: Kim Su-hyeon (꿀하니@Windrunner-KR)
 ## Title: Mumu
 ## Notes: A simple Blizzard UI overhaul
-## IconTexture: Interface\AddOns\Mumu\media\ascension
+## IconTexture: Interface\AddOns\Mumu\media\App
 ## OptionalDeps: LibStub, LibSharedMedia-3.0
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml

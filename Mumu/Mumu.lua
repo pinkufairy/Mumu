@@ -153,7 +153,7 @@ hooksecurefunc("ChatEdit_CustomTabPressed", CustomTabPressed)
 
 function Mumu:SetDefaultSpacing()
 	for i = 1, NUM_CHAT_WINDOWS do
-		_G["ChatFrame" .. i]:SetSpacing(5)
+		_G["ChatFrame" .. i]:SetSpacing(4)
 	end
 end
 
@@ -170,9 +170,8 @@ function Mumu:ChangeWoWFonts()
 	local SERIF = "Fonts\\K_Damage.ttf"
 	
 	-- Global font
-	-- _G.UNIT_NAME_FONT = NORMAL
+	_G.UNIT_NAME_FONT = SERIF
 	_G.DAMAGE_TEXT_FONT = KENRIS
-	-- _G.STANDARD_TEXT_FONT = NORMAL
 
 	-- World zone text font, world map text font
 	SetFont(ZoneTextFont, KENRIS, 32, "OUTLINE")
