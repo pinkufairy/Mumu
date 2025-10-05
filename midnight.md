@@ -104,3 +104,7 @@ Lua 테이블에는 몇 가지 추가 제한 사항이 적용됩니다.
 * 이러한 함수의 예로는 `ScriptRegion:GetHeight(ignoreRect)`가 있습니다.
   * 이 함수는 프레임에 아무것도 할당하지 않으므로, 비밀 부울 값으로 호출되더라도 어떠한 속성도 적용하지 않으며 객체를 비밀 값을 가진 것으로 표시하지 않습니다.
   * 그러나 이 함수의 매개변수 중 하나라도 비밀 값이라면, 이 함수의 반환값은 비밀 값이 됩니다.
+ 
+## 참고 자료
+* WOW UI/API 변경 내역 (https://github.com/Gethe/wow-ui-source/compare/11.2.5..12.0.0)
+* Patch 12.0 API changes (https://warcraft.wiki.gg/wiki/Patch_12.0.0/API_changes)
