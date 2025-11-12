@@ -187,9 +187,11 @@ local function UpdateTextStringWithValues(textString, value, valueMin, valueMax)
 end
 
 -- Define English Unit(K,M) or Korean Unit(만,억,조).
+-- 12.0 patch secret value
 local function UpdateBarTextFormat(self, _, value, _, maxValue)
+	--[[
 	-- If you set your preferences to show percentages and numbers together
-	if self.RightText and value and maxValue > 0 and not self.showPercentage and GetCVar("statusTextDisplay") == "BOTH" then
+	if self.RightText and value and maxValue and not self.showPercentage and GetCVar("statusTextDisplay") == "BOTH" then
 		if LocalKoKR then    -- Display numbers together in preferences
 			local v =
 				(value >= 1e9 and format("%.1f 억", value / 1e8)) or 
@@ -211,7 +213,7 @@ local function UpdateBarTextFormat(self, _, value, _, maxValue)
 				self.RightText:SetText(BreakUpLargeNumbers(value)) --- Separate numbers 10,000 and under with commas
 			end
 		end
-	end
+	end]]
 end
 
 local function UpdateBarTextColorPets()
@@ -347,8 +349,7 @@ PetHitIndicator.SetText = function() end
 
 -- Remove Tooltip <Right click for Frame Settings>
 --[[
-hooksecurefunc("UnitFrame_UpdateTooltip",
-    function(self)
+hooksecurefunc("UnitFrame_UpdateTooltip",function(self)
         for i = GameTooltip:NumLines(), 3, -1 do
             local line = _G["GameTooltipTextLeft" .. i]
             local text = line and line:GetText()
@@ -359,3 +360,48 @@ hooksecurefunc("UnitFrame_UpdateTooltip",
         end
     end
 )]]
+
+-- remove Realm Names 
+hooksecurefunc("CompactUnitFrame_UpdateName",function(frame)
+        if frame and not frame:IsForbidden() then
+            local frame_name = frame:GetName()
+            if
+                frame_name and
+                    (frame_name:match("^PartyMemberFrame%d") or frame_name:match("^CompactRaidFrame%d") or
+                        frame_name:match("^CompactRaidGroup%dMember%d") or
+                        frame_name:match("^CompactPartyFrameMember%d")) and
+                    frame.unit and
+                    frame.name
+             then
+                if UnitIsPlayer(frame.unit) then
+                    local unit_name = GetUnitName(frame.unit, true)
+                    if unit_name then
+                        frame.name:SetText(unit_name:match("[^-]+"))
+                    end
+                end
+            end
+        end
+    end
+)
+
+hooksecurefunc("UnitFrame_Update",function(frame)
+        for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
+            local unit_name = GetUnitName(frame.unit, true)
+            if unit_name then
+                frame.name:SetText(unit_name:match("[^-]+"))
+            end
+        end
+    end
+)
+
+hooksecurefunc("CompactUnitFrame_UpdateName",function(frame)
+        local isInInstance, instanceType = IsInInstance()
+        if UnitIsPlayer(frame.unit) then
+            if not isInInstance or instanceType == "none" and ShouldShowName(frame) then
+                if frame.optionTable.colorNameBySelection then
+                    frame.name:SetText(GetUnitName(frame.unit))
+                end
+            end
+        end
+    end
+)

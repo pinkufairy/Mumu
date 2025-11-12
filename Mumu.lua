@@ -238,6 +238,8 @@ function Mumu:ChangeWoWFonts()
 
 end
 
+--[[
 hooksecurefunc(TalkingHeadFrame, "PlayCurrent", function(self)
 	self:Hide()
 end)
+]]

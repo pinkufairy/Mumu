@@ -77,6 +77,8 @@ local function CalculateAverageItemLevel(unit)
 
 	-- Depending on server conditions, inventory scans are not accurate.
 	-- especially for heirloom gear, which does not properly load item levels.
+	-- 12.0 patch 
+
 	--[[
 	local total, count, ilvl = 0, 0, 0
 	for i = 1, 17 do
@@ -91,7 +93,7 @@ local function CalculateAverageItemLevel(unit)
 			end
 		end
 	end
-	if count > 0 then
+	if count > 1 then
 		ilvl = total / count
 		if (ilvl < a + 2) and (ilvl > a - 2) then
 			return ilvl
@@ -100,7 +102,8 @@ local function CalculateAverageItemLevel(unit)
 		end
 	else
 		return nil
-	end]]
+	end
+	]]
 	return a
 end
 

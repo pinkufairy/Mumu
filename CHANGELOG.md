@@ -1,3 +1,2 @@
-# 2025-3-5
-* Update 11.1 Patch
-* Replace Paperdoll Item Level
+# 2025-11-13
+* Update 12.0 Midnight
