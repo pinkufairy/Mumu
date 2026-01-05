@@ -6,38 +6,39 @@ local cachedMythicScores = {}
 local cachedSpecs = {}
 local tiers = {
 	-- myth
-	[1] = { ["score"] = 729, ["color"] = { 1.00, 0.50, 0.00 } },		-- #ff8000
-	[2] = { ["score"] = 726, ["color"] = { 0.98, 0.47, 0.19 } },		-- #fb7831
-	[3] = { ["score"] = 723, ["color"] = { 0.96, 0.44, 0.29 } },		-- #f6714a
-	[4] = { ["score"] = 720, ["color"] = { 0.95, 0.41, 0.38 } },		-- #f16960
-	[5] = { ["score"] = 717, ["color"] = { 0.92, 0.38, 0.45 } },		-- #eb6274
-	[6] = { ["score"] = 714, ["color"] = { 0.89, 0.35, 0.53 } },		-- #e45a87
-	[7] = { ["score"] = 710, ["color"] = { 0.86, 0.33, 0.61 } },		-- #dc539b
-	[8] = { ["score"] = 707, ["color"] = { 0.82, 0.29, 0.68 } },		-- #d24bae
+	[1] = { ["score"] = 289, ["color"] = { 1.00, 0.50, 0.00 } },		-- #ff8000
+	[2] = { ["score"] = 286, ["color"] = { 0.98, 0.47, 0.19 } },		-- #fb7831
+	[3] = { ["score"] = 282, ["color"] = { 0.96, 0.44, 0.29 } },		-- #f6714a
+	[4] = { ["score"] = 279, ["color"] = { 0.95, 0.41, 0.38 } },		-- #f16960
+	[5] = { ["score"] = 276, ["color"] = { 0.92, 0.38, 0.45 } },		-- #eb6274
+	[6] = { ["score"] = 272, ["color"] = { 0.89, 0.35, 0.53 } },		-- #e45a87
+
 
 	-- hero
-	[9] = { ["score"] = 704, ["color"] = { 0.78, 0.27, 0.76 } },		-- #c744c1
-	[10] = { ["score"] = 701, ["color"] = { 0.73, 0.24, 0.83 } },		-- #ba3dd4
-	[11] = { ["score"] = 697, ["color"] = { 0.66, 0.22, 0.91 } },		-- #a937e7
-	[12] = { ["score"] = 694, ["color"] = { 0.59, 0.26, 0.93 } },		-- #9742ec
+	[7] = { ["score"] = 269, ["color"] = { 0.86, 0.33, 0.61 } },		-- #dc539b
+	[8] = { ["score"] = 266, ["color"] = { 0.82, 0.29, 0.68 } },		-- #d24bae
+	[9] = { ["score"] = 263, ["color"] = { 0.78, 0.27, 0.76 } },		-- #c744c1
+	[10] = { ["score"] = 259, ["color"] = { 0.73, 0.24, 0.83 } },		-- #ba3dd4
 
 	-- champion
-	[13] = { ["score"] = 691, ["color"] = { 0.51, 0.32, 0.91 } },		-- #8351e8
-	[14] = { ["score"] = 688, ["color"] = { 0.43, 0.36, 0.90 } },		-- #6d5de5
-	[15] = { ["score"] = 684, ["color"] = { 0.32, 0.40, 0.89 } },		-- #5266e2
-	[16] = { ["score"] = 681, ["color"] = { 0.15, 0.43, 0.87 } },		-- #276ede
+	[11] = { ["score"] = 256, ["color"] = { 0.66, 0.22, 0.91 } },		-- #a937e7
+	[12] = { ["score"] = 253, ["color"] = { 0.59, 0.26, 0.93 } },		-- #9742ec
+	[13] = { ["score"] = 250, ["color"] = { 0.51, 0.32, 0.91 } },		-- #8351e8
+	[14] = { ["score"] = 246, ["color"] = { 0.43, 0.36, 0.90 } },		-- #6d5de5
 
 	-- Veteran
-	[17] = { ["score"] = 678, ["color"] = { 0.13, 0.46, 0.84 } },		-- #2275d7
-	[18] = { ["score"] = 675, ["color"] = { 0.22, 0.49, 0.81 } },		-- #377dcf
-	[19] = { ["score"] = 671, ["color"] = { 0.27, 0.52, 0.78 } },		-- #4485c7
-	[20] = { ["score"] = 668, ["color"] = { 0.30, 0.55, 0.75 } },		-- #4d8dbe
+	[15] = { ["score"] = 243, ["color"] = { 0.32, 0.40, 0.89 } },		-- #5266e2
+	[16] = { ["score"] = 240, ["color"] = { 0.15, 0.43, 0.87 } },		-- #276ede
+	[17] = { ["score"] = 237, ["color"] = { 0.13, 0.46, 0.84 } },		-- #2275d7
+	[18] = { ["score"] = 233, ["color"] = { 0.22, 0.49, 0.81 } },		-- #377dcf
 
 	-- advanture
-	[21] = { ["score"] = 664, ["color"] = { 0.33, 0.58, 0.71 } },		-- #5495b6
-	[22] = { ["score"] = 661, ["color"] = { 0.35, 0.62, 0.68 } },		-- #50a0bd
-	[23] = { ["score"] = 658, ["color"] = { 0.26, 0.61, 0.68 } },		-- #419CAC
-	[24] = { ["score"] = 655, ["color"] = { 0.20, 0.60, 0.60 } },		-- #32989A
+	[19] = { ["score"] = 230, ["color"] = { 0.27, 0.52, 0.78 } },		-- #4485c7
+	[20] = { ["score"] = 227, ["color"] = { 0.30, 0.55, 0.75 } },		-- #4d8dbe
+	[21] = { ["score"] = 224, ["color"] = { 0.33, 0.58, 0.71 } },		-- #5495b6
+	[22] = { ["score"] = 220, ["color"] = { 0.35, 0.62, 0.68 } },		-- #50a0bd
+	[23] = { ["score"] = 214, ["color"] = { 0.26, 0.61, 0.68 } },		-- #419CAC
+	[24] = { ["score"] = 200, ["color"] = { 0.20, 0.60, 0.60 } },		-- #32989A
 
 	-- misc
 	[25] = { ["score"] = 0, ["color"] = { 0.33, 0.39, 0.45 } },			-- #566573
@@ -148,7 +149,12 @@ local function GetScoreColor(score)
 end
 
 local function GetItemLevelAndInfo(unit, callback)
-	local guid = UnitGUID(unit)
+	local guid
+
+	if canaccessvalue(UnitGUID(unit)) then
+		guid = UnitGUID(unit)
+	end
+
 	if not guid then
 		callback(nil, nil, nil)
 		return
@@ -174,13 +180,13 @@ local function AddInfoToTooltip(tooltip, unit)
 		if not tooltip or not tooltip.AddLine then return end
 
 		for i = tooltip:NumLines(), 1, -1 do
-            local line = _G[tooltip:GetName().."TextLeft"..i]
+			local line = _G[tooltip:GetName().."TextLeft"..i]
 
-            if line and line:GetText() and line:GetText() == "불러오는 중" or line:GetText() == "평점" or line:GetText() == "\124cFF999999\124r" then
+			if line and line:GetText() and line:GetText() == "불러오는 중" or line:GetText() == "평점" or line:GetText() == "\124cFF999999\124r" then
 				--print("\124cFFB0BEC5line: \124r"..line:GetText())
 				line:SetText(nil)
 			end
-        end
+		end
 
 		if avgItemLevel == "reading" then
 			tooltip:AddLine("불러오는 중", 0.33, 0.39, 0.45)
@@ -202,7 +208,7 @@ local function AddInfoToTooltip(tooltip, unit)
 						bestRun = run.bestRunLevel
 					end
 				end
-	
+
 				if bestRun > 0 then
 					mythicLabel = mythicScore .. " +" .. bestRun
 				end
@@ -237,22 +243,14 @@ f:SetScript("OnEvent", function(self, event, ...)
 		if pendingInspects[guid] then
 			local unit = nil
 			for _, unitType in ipairs({"player", "target", "mouseover", "focus"}) do
-				if UnitGUID(unitType) == guid then
-					unit = unitType
-					break
-				end
-			end
-			--[[
-			if not unit then
-				for i = 1, 40 do
-					local partyUnit = (i <= 5) and ("party"..i) or ("raid"..i)
-					if UnitGUID(partyUnit) == guid then
-						unit = partyUnit
+				if canaccessvalue(UnitGUID(unitType)) then
+					if UnitGUID(unitType) == guid then
+						unit = unitType
 						break
 					end
 				end
 			end
-			]]
+
 			if unit then
 				local avgItemLevel = CalculateAverageItemLevel(unit)
 				local mythicScore = C_PlayerInfo.GetPlayerMythicPlusRatingSummary(unit)

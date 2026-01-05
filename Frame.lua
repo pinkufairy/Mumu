@@ -76,145 +76,6 @@ local function GetPowerColors(unit)
 	return r, g, b
 end
 
-local function UpdateTextStringWithValues(textString, value, valueMin, valueMax)
-	if( self.LeftText and self.RightText ) then
-		self.LeftText:SetText("");
-		self.RightText:SetText("");
-		self.LeftText:Hide();
-		self.RightText:Hide();
-	end
-	
-	-- Max value is valid and updates aren't paused
-	if ( ( tonumber(valueMax) ~= valueMax or valueMax > 0 ) and not ( self.pauseUpdates ) ) then
-		self:Show();
-		
-		if ( (self.cvar and GetCVar(self.cvar) == "1" and self.textLockable) or self.forceShow ) then
-			textString:Show();
-		elseif ( self.lockShow > 0 and (not self.forceHideText) ) then
-			textString:Show();
-		else
-			textString:SetText("");
-			textString:Hide();
-			return;
-		end
-
-		-- Display zero text
-		if ( value == 0 and self.zeroText ) then
-			textString:SetText(self.zeroText);
-			self.isZero = 1;
-			textString:Show();
-			return;
-		end
-
-		self.isZero = nil;
-
-		local valueDisplay = value;
-		local valueMaxDisplay = valueMax;
-
-		-- If custom text transform func provided, use that
-		if ( self.numericDisplayTransformFunc ) then
-			valueDisplay, valueMaxDisplay = self.numericDisplayTransformFunc(value, valueMax);
-		-- Otherwise just the usual large number handling
-		else
-			if ( self.capNumericDisplay ) then
-				valueDisplay = AbbreviateLargeNumbers(value);
-				valueMaxDisplay = AbbreviateLargeNumbers(valueMax);
-			else
-				valueDisplay = BreakUpLargeNumbers(value);
-				valueMaxDisplay = BreakUpLargeNumbers(valueMax);
-			end
-		end
-
-		local shouldUsePrefix = self.prefix and (self.alwaysPrefix or not (self.cvar and GetCVar(self.cvar) == "1" and self.textLockable) );
-
-		local displayMode = GetCVar("statusTextDisplay");
-		-- Evaluate display mode overrides in priority order
-		if ( self.showNumeric ) then
-			displayMode = STATUS_TEXT_DISPLAY_MODE.NUMERIC;
-		elseif ( self.showPercentage ) then
-			displayMode = STATUS_TEXT_DISPLAY_MODE.PERCENT;
-		end
-
-		-- If percent-only mode and percentages disabled, fall back on numeric-only
-		if ( self.disablePercentages and displayMode == STATUS_TEXT_DISPLAY_MODE.PERCENT ) then
-			displayMode = STATUS_TEXT_DISPLAY_MODE.NUMERIC;
-		end
-
-		-- Numeric only
-		if ( valueMax <= 0 or displayMode == STATUS_TEXT_DISPLAY_MODE.NUMERIC or displayMode == STATUS_TEXT_DISPLAY_MODE.NONE) then
-			if ( shouldUsePrefix ) then
-				textString:SetText(self.prefix.." "..valueDisplay.." / "..valueMaxDisplay);
-			else
-				textString:SetText(valueDisplay.." / "..valueMaxDisplay);
-			end
-		-- Numeric + Percentage
-		elseif ( displayMode == STATUS_TEXT_DISPLAY_MODE.BOTH ) then
-			if ( self.LeftText and self.RightText ) then
-				-- Unless explicitly disabled, only display percentage on left if displaying mana or a non-power value (legacy behavior that should eventually be revisited)
-				if ( not self.disablePercentages and (not self.powerToken or self.powerToken == "MANA") ) then
-					self.LeftText:SetText(math.ceil((value / valueMax) * 100) .. "%");
-					self.LeftText:Show();
-				end
-				self.RightText:SetText(valueDisplay);
-				self.RightText:Show();
-				textString:Hide();
-			else
-				valueDisplay = valueDisplay .. " / " .. valueMaxDisplay;
-				if ( not self.disablePercentages ) then
-					valueDisplay = "(" .. math.ceil((value / valueMax) * 100) .. "%) " .. valueDisplay;
-				end
-			end
-			textString:SetText(valueDisplay);
-		-- Percentage Only
-		elseif ( displayMode == STATUS_TEXT_DISPLAY_MODE.PERCENT ) then
-			valueDisplay = math.ceil((value / valueMax) * 100) .. "%";
-			if ( shouldUsePrefix ) then
-				textString:SetText(self.prefix .. " " .. valueDisplay);
-			else
-				textString:SetText(valueDisplay);
-			end
-		end
-	-- Max value is invalid or updates are paused
-	else
-		textString:Hide();
-		textString:SetText("");
-		if ( not self.alwaysShow ) then
-			self:Hide();
-		else
-			self:SetValue(0);
-		end
-	end
-end
-
--- Define English Unit(K,M) or Korean Unit(만,억,조).
--- 12.0 patch secret value
-local function UpdateBarTextFormat(self, _, value, _, maxValue)
-	--[[
-	-- If you set your preferences to show percentages and numbers together
-	if self.RightText and value and maxValue and not self.showPercentage and GetCVar("statusTextDisplay") == "BOTH" then
-		if LocalKoKR then    -- Display numbers together in preferences
-			local v =
-				(value >= 1e9 and format("%.1f 억", value / 1e8)) or 
-				(value >= 1e8 and format("%.2f 억", value / 1e8)) or 
-				(value >= 1e6 and format("%.0f 만", value / 1e4)) or 
-				(value >= 1e5 and format("%.1f 만", value / 1e4)) or 
-				value
-			if value >= 1e5 then
-				self.RightText:SetText(v)
-			elseif value >= 1000 then
-				self.RightText:SetText(BreakUpLargeNumbers(value)) --- Separate numbers 10,000 and under with commas
-			end
-		else 
-			local v =
-				((value >= 1e8 and format("%.0f M", value / 1e6)) or (value >= 1e5 and format("%.0f K", value / 1e3)) or value)
-			if value >= 1e5 then
-				self.RightText:SetText(v)
-			elseif value >= 1000 then
-				self.RightText:SetText(BreakUpLargeNumbers(value)) --- Separate numbers 10,000 and under with commas
-			end
-		end
-	end]]
-end
 
 local function UpdateBarTextColorPets()
 	PetFrameHealthBarTextLeft:SetText(nil)
@@ -327,7 +188,41 @@ UpdateColor:SetScript("OnEvent",function(_, event)
 	end
 end)
 
--- hooking
+-- Remove Hit Indicator of Player Portrait.
+PetHitIndicator:SetText(nil)
+PetHitIndicator.SetText = function() end
+
+local function UpdateBarTextFormat(self, _, value, _, maxValue)
+	-- If you set your preferences to show percentages and numbers together
+	if self.RightText and value and maxValue and not self.showPercentage and GetCVar("statusTextDisplay") == "BOTH" then
+
+		--[[	
+			Name = "AbbreviateLargeNumbers",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Arguments =
+			{
+				{ Name = "number", Type = "number", Nilable = false },
+				{ Name = "options", Type = "NumberAbbrevOptions", Nilable = true },
+			},
+			Returns =
+			{
+				{ Name = "result", Type = "string", Nilable = false },
+			},
+		
+			Name = "NumberAbbrevOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "breakpointData", Type = "table", InnerType = "NumberAbbrevData", Nilable = true, Documentation = { "Order these from largest to smallest." } },
+				{ Name = "locale", Type = "cstring", Nilable = true, Documentation = { "Locale controls whether standard asian abbreviation data will be used along with a small change in behavior for large number abbreviation when fractionDivisor is greater than zero." } },
+				{ Name = "config", Type = "AbbreviateConfig", Nilable = true, Documentation = { "Provides a cached config object for optimal performance when calling abbreviation functions multiple times with the same options." } },
+			},
+		]]
+		AbbreviateLargeNumbers(value)
+	end
+end
+
 hooksecurefunc(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
 hooksecurefunc(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
 hooksecurefunc(AlternatePowerBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
@@ -337,71 +232,3 @@ hooksecurefunc(TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsC
 hooksecurefunc(TargetFrame.TargetFrameContent.TargetFrameContentMain.ManaBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
 hooksecurefunc(PetFrameHealthBar,"UpdateTextStringWithValues",UpdateBarTextColorPets)
 hooksecurefunc(PetFrameManaBar,"UpdateTextStringWithValues",UpdateBarTextColorPets)
-
-for i = 1, MAX_BOSS_FRAMES do
-	local bossTargetFrame = _G["Boss" .. i .. "TargetFrame"]
-	hooksecurefunc(bossTargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer.HealthBar, "UpdateTextStringWithValues", UpdateBarTextFormat)
-end
-
--- Remove Hit Indicator of Player Portrait.
-PetHitIndicator:SetText(nil)
-PetHitIndicator.SetText = function() end
-
--- Remove Tooltip <Right click for Frame Settings>
---[[
-hooksecurefunc("UnitFrame_UpdateTooltip",function(self)
-        for i = GameTooltip:NumLines(), 3, -1 do
-            local line = _G["GameTooltipTextLeft" .. i]
-            local text = line and line:GetText()
-            if text and text == UNIT_POPUP_RIGHT_CLICK then
-                GameTooltip:SetUnit(self.unit, self.hideStatusOnTooltip)
-                break
-            end
-        end
-    end
-)]]
-
--- remove Realm Names 
-hooksecurefunc("CompactUnitFrame_UpdateName",function(frame)
-        if frame and not frame:IsForbidden() then
-            local frame_name = frame:GetName()
-            if
-                frame_name and
-                    (frame_name:match("^PartyMemberFrame%d") or frame_name:match("^CompactRaidFrame%d") or
-                        frame_name:match("^CompactRaidGroup%dMember%d") or
-                        frame_name:match("^CompactPartyFrameMember%d")) and
-                    frame.unit and
-                    frame.name
-             then
-                if UnitIsPlayer(frame.unit) then
-                    local unit_name = GetUnitName(frame.unit, true)
-                    if unit_name then
-                        frame.name:SetText(unit_name:match("[^-]+"))
-                    end
-                end
-            end
-        end
-    end
-)
-
-hooksecurefunc("UnitFrame_Update",function(frame)
-        for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
-            local unit_name = GetUnitName(frame.unit, true)
-            if unit_name then
-                frame.name:SetText(unit_name:match("[^-]+"))
-            end
-        end
-    end
-)
-
-hooksecurefunc("CompactUnitFrame_UpdateName",function(frame)
-        local isInInstance, instanceType = IsInInstance()
-        if UnitIsPlayer(frame.unit) then
-            if not isInInstance or instanceType == "none" and ShouldShowName(frame) then
-                if frame.optionTable.colorNameBySelection then
-                    frame.name:SetText(GetUnitName(frame.unit))
-                end
-            end
-        end
-    end
-)

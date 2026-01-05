@@ -12,8 +12,6 @@ local IsInRaid = IsInRaid
 local IsShiftKeyDown = IsShiftKeyDown
 local width, height = GetPhysicalScreenSize()
 
--- _G["UNIT_POPUP_RIGHT_CLICK"] = "상세 메뉴: 우클릭"
-
 -- Create Frame/event handler
 Mumu = CreateFrame("Frame", "Mumu")
 Mumu:SetScript(
@@ -219,7 +217,7 @@ function Mumu:ChangeWoWFonts()
 		bossTargetFrame.TargetFrameContent.TargetFrameContentMain.Name:SetFont(PANNO, 11, "")
 	end 
 
-	-- Game Tooltip font
+	
 	if width > 2048 then
 		GameTooltipText:SetFont(NORMAL, 15, "")
 		GameTooltipHeaderText:SetFont(NORMAL, 15, "")
@@ -234,12 +232,6 @@ function Mumu:ChangeWoWFonts()
 	PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HitIndicator.HitText:SetFont(KENRIS, 32, "THINOUTLINE")
 
 	-- Money Frame Font
-	SetFont(PriceFont, NUMBER, 14, "")
+	-- SetFont(PriceFont, NUMBER, 14, "")
 
 end
-
---[[
-hooksecurefunc(TalkingHeadFrame, "PlayCurrent", function(self)
-	self:Hide()
-end)
-]]
